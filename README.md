@@ -135,16 +135,6 @@ http://127.0.0.1:8082/docs
 
 ---
 
-## Zusätzliche API-Funktion (rag_v2)
-
-```
-/recommend_countries
-```
-
-Generiert **Reiseempfehlungen basierend auf dem bisherigen Gespräch**.
-
----
-
 ## Lizenz
 
 Dieses Projekt ist für die Nutzung im Rahmen der DHBW gedacht.
