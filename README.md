@@ -1,8 +1,151 @@
-# DHChatBot
-Bei dem DHChatBot handelt es sich um einen Chatbot, der Infos über die Möglichkeiten zum Auslandssemester geben soll. 
+# DHChatBot – RAG-basierter Chatbot für die DHBW Heilbronn
 
-## CLI
-rag_v1.py stellt das ganze als CLI dar.
+Dieser Chatbot dient als Informations- und Assistenzsystem rund um das Thema **Auslandssemester**.  
+Er basiert auf **RAG (Retrieval Augmented Generation)** mit **LlamaIndex** und nutzt **lokale Datenquellen** sowie **Webscraping**.
 
-## API
-rag_v2.py stellt via fastapi eine API Schnittstelle auf Port 8082 bereit
+---
+
+## Funktionen
+
+- Verarbeitung lokaler PDF-/Text-Dokumente
+- Laden und Einbinden externer Webseiten
+- Erstellung einer persistenten Vektordatenbank
+- Chat mit Gedächtnis (ChatMemoryBuffer)
+- CLI-Version (`rag_v1.py`)
+- FastAPI-basierte API-Version (`rag_v2.py`)
+- CORS-konfigurierbar für Web-Frontends
+- Empfehlungssystem für Reiseländer auf Basis des Chatverlaufs (rag_v2)
+
+---
+
+## Projektstruktur
+
+```
+.
+├── mkdirs.py            # Erstellt lokale Datenordner
+├── parameters.py        # Modelle, Ordner, URLs, CORS-Einstellungen
+├── rag_v1.py            # CLI-Chatbot
+├── rag_v2.py            # FastAPI-Server
+├── README.md            # Projektdokumentation
+├── requirements.txt     # Abhängigkeiten
+└── datenquelle/         # Lokale Dateien für den Index
+```
+
+---
+
+## Installation
+
+### 1. Repository klonen
+```
+git clone <repo-url>
+cd <projektordner>
+```
+
+### 2. Python-Umgebung erzeugen
+```
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+```
+
+### 3. Abhängigkeiten installieren
+```
+pip install -r requirements.txt
+```
+
+> **Achtung:** Du benötigst eine lokale **Ollama-Installation** und die im Projekt referenzierten Modelle:
+>
+> - `gemma3:12b`
+> - `nomic-embed-text`
+
+---
+
+## Lokale Daten vorbereiten
+
+Falls du lokale Dateien indexieren möchtest:
+
+```
+python mkdirs.py
+```
+
+Danach PDFs/Textdateien in den Ordner `./datenquelle/` legen.
+
+---
+
+##  Verwendung der CLI-Version
+
+Starte den CLI-Chat:
+
+```
+python rag_v1.py
+```
+
+Beenden mit:
+
+```
+/bye
+```
+
+---
+
+## API-Version starten
+
+```
+python rag_v2.py
+```
+
+Der Server läuft dann unter:
+
+```
+http://127.0.0.1:8082
+```
+
+API-Dokumentation (Swagger):
+
+```
+http://127.0.0.1:8082/docs
+```
+
+---
+
+## Funktionsweise des RAG-Systems
+
+1. **Laden externer Webseiten** (via `SimpleWebPageReader`)
+2. **Laden lokaler Dateien**
+3. **Erstellen eines Vektorindex** (persistente Speicherung in `./storage_llamaindex`)
+4. **ChatEngine mit Gedächtnis erzeugen**
+5. **Antworten werden basierend auf Dokumenten generiert**
+6. **Fallback-Verhalten**, wenn Informationen fehlen:
+   - Ehrliche Aussage, dass Informationen nicht vorhanden sind
+   - Generierung einer professionellen E-Mail an das International Office
+
+---
+
+##  Konfiguration (über `parameters.py`)
+
+### KI-Modelle
+- `OLLAMA_MODEL`: LLM für den Chat
+- `OLLAMA_EMBED_MODEL`: Modell für Embeddings
+
+### Datenquellen
+- `LOCAL_DATA_FOLDER`
+- `URLS_TO_SCRAPE`
+
+### CORS-Frontend-Freigaben
+- `ORIGINS`
+
+---
+
+## Zusätzliche API-Funktion (rag_v2)
+
+```
+/recommend_countries
+```
+
+Generiert **Reiseempfehlungen basierend auf dem bisherigen Gespräch**.
+
+---
+
+## Lizenz
+
+Dieses Projekt ist für die Nutzung im Rahmen der DHBW gedacht.
+
