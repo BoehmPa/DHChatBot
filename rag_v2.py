@@ -33,11 +33,9 @@ class RAGApplication:
     def _initialize_index(self):
         """Lädt den Index von der Festplatte oder erstellt ihn neu."""
         if os.path.exists(PERSIST_DIR):
-            print("Lade existierenden Index aus './storage_llamaindex'")
             storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
             self.index = load_index_from_storage(storage_context)
         else:
-            print("Erstelle neuen Index")
             self._ingest_and_create_index()
 
     def _ingest_and_create_index(self):
@@ -54,7 +52,7 @@ class RAGApplication:
             except Exception as e:
                 print(f"Fehler beim Laden der Webseiten: {e}")
 
-        # Lokale Dateien laden
+        # Backup, falls mkdirs.py nicht genutzt wurde
         if not os.path.exists(LOCAL_DATA_FOLDER):
             os.makedirs(LOCAL_DATA_FOLDER)
 
@@ -64,11 +62,11 @@ class RAGApplication:
             local_docs = local_reader.load_data()
             documents.extend(local_docs)
         except Exception as e:
-            print(f"Info lokale Daten: {e}")
+            print(f"Info: {e}")
 
         if not documents:
-            print("WARNUNG: Keine Daten gefunden. Erstelle leeren Index.")
-            documents = [Document(text="Leerer Initial-Dokument.")]
+            print("Keine Daten gefunden. Erstelle leeren Index.")
+            documents = [Document(text="Leeres Initial-Dokument.")]
 
         # Index erstellen und speichern
         self.index = VectorStoreIndex.from_documents(documents, show_progress=True)
@@ -116,7 +114,7 @@ class RAGApplication:
         return str(response)
 
 
-# 1. API-Datenmodelle
+# API-Datenmodelle
 class ChatRequest(BaseModel):
     """Das JSON, das das Frontend senden muss."""
     message: str
@@ -125,43 +123,32 @@ class ChatResponse(BaseModel):
     """Das JSON, das die API an das Frontend zurückgibt."""
     response: str
 
-# 2. FastAPI-App erstellen
+# FastAPI-App erstellen
 app_api = FastAPI(
     title="DHBW Heilbronn RAG API",
     description="Eine API für den Chatbot der DHBW Heilbronn.",
     version="1.0.0"
 )
 
-# 3. CORS-Middleware hinzufügen (WICHTIG!)
-# Erlaube Anfragen von deinem Frontend (z.B. http://localhost:3000 für React)
-origins = [
-    "http://localhost:3000",  # Beispiel für React/Vue/Angular-Entwicklungsserver
-    "http://127.0.0.1:3000",
-    "http://localhost:8080",  # API server
-    "http://localhost",      # Allgemein
-]
+# CORS-Middleware hinzufügen (WICHTIG!)
+# Erlaube Anfragen von deinem Frontend, spezifiziert in parameters.py
+origins = ORIGINS
 
 app_api.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Erlaube alle Methoden (GET, POST, etc.)
-    allow_headers=["*"],  # Erlaube alle Header
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
-# 4. RAG-Anwendung global laden (passiert nur einmal beim Start!)
-print("Initialisiere die RAG-Anwendung")
 app_rag = RAGApplication()
-print("RAG-Anwendung ist bereit und API startet!")
-
-
-# 5. API-Endpunkte definieren
 
 @app_api.get("/")
 async def get_root():
     """Ein einfacher Test-Endpunkt, um zu sehen, ob der Server läuft."""
-    return {"message": "Willkommen beim DHBW Heilbronn RAG API!"}
+    return {"message": "Willkommen beim Chatbot der DHBW Heilbronn"}
 
 @app_api.post("/chat", response_model=ChatResponse)
 async def handle_chat(request: ChatRequest):
@@ -170,18 +157,14 @@ async def handle_chat(request: ChatRequest):
     Nimmt eine Nachricht entgegen und gibt die Antwort des Bots zurück.
     """
     try:
-        # Pydantic (ChatRequest) stellt sicher, dass request.message ein String ist.
         bot_response = app_rag.chat(request.message)
         return ChatResponse(response=bot_response)
     except Exception as e:
-        print(f"Fehler bei /chat: {e}") # Wichtig für Server-Logs
-        # Wirf einen HTTP-Fehler, den das Frontend verarbeiten kann
+        print(f"Fehler bei /chat: {e}")
         raise HTTPException(status_code=500, detail=f"Ein interner Fehler ist aufgetreten: {e}")
 
 
-
-# 6. Server starten (wenn die Datei direkt ausgeführt wird)
 if __name__ == "__main__":
-    print("Starte den API-Server auf http://127.0.0.1:8000")
-    print("Die API-Dokumentation findest du unter http://127.0.0.1:8000/docs")
-    uvicorn.run(app_api, host="127.0.0.1", port=8000)
+    print("Starte den API-Server auf http://127.0.0.1:8082")
+    print("Die API-Dokumentation findest du unter http://127.0.0.1:8082/docs")
+    uvicorn.run(app_api, host="0.0.0.0", port=8082)

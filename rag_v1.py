@@ -64,7 +64,7 @@ class RAGApplication:
             print(f"Info: {e}")
 
         if not documents:
-            print("WARNUNG: Keine Daten gefunden. Erstelle leeren Index.")
+            print("Keine Daten gefunden. Erstelle leeren Index.")
             documents = [Document(text="Leerer Initial-Dokument.")]
 
         # Index erstellen und speichern
