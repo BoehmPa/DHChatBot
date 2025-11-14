@@ -14,7 +14,6 @@ Er basiert auf **RAG (Retrieval Augmented Generation)** mit **LlamaIndex** und n
 - CLI-Version (`rag_v1.py`)
 - FastAPI-basierte API-Version (`rag_v2.py`)
 - CORS-konfigurierbar für Web-Frontends
-- Empfehlungssystem für Reiseländer auf Basis des Chatverlaufs (rag_v2)
 
 ---
 
@@ -29,6 +28,7 @@ Er basiert auf **RAG (Retrieval Augmented Generation)** mit **LlamaIndex** und n
 ├── README.md            # Projektdokumentation
 ├── requirements.txt     # Abhängigkeiten
 └── datenquelle/         # Lokale Dateien für den Index
+└── storage_llamaindex/  # Speicherort der Vektordatenbank, wird vom Skript erstellt
 ```
 
 ---
