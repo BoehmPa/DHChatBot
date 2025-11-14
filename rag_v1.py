@@ -75,7 +75,7 @@ class RAGApplication:
             chat_mode="condense_plus_context",
             memory=memory,
             verbose=False,
-            system_prompt={
+            system_prompt=("""
                 "system_prompt": {
                     "role": "Hilfreicher Assistent",
                     "main_task": "Du beantwortest Fragen basierend auf den bereitgestellten Dokumenten.",
@@ -86,8 +86,8 @@ class RAGApplication:
                             "Formuliere eine professionelle E-Mail an die zuständige Stelle."
                         ]
                     }
-                }
-            }
+                }"""
+            )
         )
 
     def chat(self, user_input: str) -> str:
