@@ -103,18 +103,6 @@ class RAGApplication:
         response = self.chat_engine.chat(user_input)  # Verarbeite die Benutzer-Nachricht mit dem Chat-Engine
         return str(response)
 
-    def recommend_countries(self) -> str:
-        """Empfiehlt dem Benutzer basierend auf bisherigen Gesprächen bestimmte Länder."""
-        prompt = ("""
-            {
-              "kontext": "Basierend auf unserem gesamten bisherigen Gesprächsverlauf (und NUR darauf):",
-              "hauptfrage": "Welche Länder würdest du mir empfehlen zu bereisen oder mich näher damit zu befassen?",
-              "anforderung": "Begründe deine Empfehlung kurz anhand der Interessen, die ich im Gespräch geäußert habe."
-            }"""
-        )
-        response = self.chat_engine.chat(prompt)  # Frage den Chat-Engine nach Ländern
-        return str(response)
-
 
 # API-Datenmodelle für die Chat-Anfrage und -Antwort
 class ChatRequest(BaseModel):

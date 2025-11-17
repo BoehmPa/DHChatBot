@@ -1,9 +1,14 @@
 # DHChatBot – RAG-basierter Chatbot für die DHBW Heilbronn
 
+Das originale Projekt ist zu finden unter [https://github.com/BoehmPa/DHChatBot](https://github.com/BoehmPa/DHChatBot])
+
 Dieser Chatbot dient als Informations- und Assistenzsystem rund um das Thema **Auslandssemester**.  
 Er basiert auf **RAG (Retrieval Augmented Generation)** mit **LlamaIndex** und nutzt **lokale Datenquellen** sowie **Webscraping**.
 
----
+> **genutzte Ports:** <br>
+> Ollama: 11434 <br>
+> API: 8082
+
 
 ## Funktionen
 
@@ -27,7 +32,7 @@ Er basiert auf **RAG (Retrieval Augmented Generation)** mit **LlamaIndex** und n
 ├── rag_v2.py            # FastAPI-Server
 ├── README.md            # Projektdokumentation
 ├── requirements.txt     # Abhängigkeiten
-└── datenquelle/         # Lokale Dateien für den Index
+├── datenquelle/         # Lokale Dateien für den Index, kann mit mkdirs.py erstellt und manuell befüllt werden
 └── storage_llamaindex/  # Speicherort der Vektordatenbank, wird vom Skript erstellt
 ```
 
@@ -37,14 +42,19 @@ Er basiert auf **RAG (Retrieval Augmented Generation)** mit **LlamaIndex** und n
 
 ### 1. Repository klonen
 ```
-git clone <repo-url>
-cd <projektordner>
+git clone https://wi-git.heilbronn.dhbw.de/jan.klitscher.24/chatbot-auslandssemester
+cd chatbot-auslandssemester
+```
+**alternativ**
+```
+git clone https://github.com/BoehmPa/DHChatBot
+cd DHChatBot
 ```
 
 ### 2. Python-Umgebung erzeugen
 ```
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate   # Windows: venv\Scripts\activate
 ```
 
 ### 3. Abhängigkeiten installieren
@@ -52,12 +62,15 @@ source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-> **Achtung:** Du benötigst eine lokale **Ollama-Installation** und die im Projekt referenzierten Modelle:
+> **Achtung:** Du benötigst eine lokale **Ollama-Installation** und die im Projekt referenzierten Modelle. Wenn du andere modelle verwendest musst du diese in der parameters.py ändern.
+> <br> Im Projekt werden diese Modelle verwendet:
 >
 > - `gemma3:12b`
-> - `nomic-embed-text`
-
+> - `nomic-embed-text` <br>
+> 
 ---
+
+
 
 ## Lokale Daten vorbereiten
 
@@ -99,7 +112,7 @@ Der Server läuft dann unter:
 http://127.0.0.1:8082
 ```
 
-API-Dokumentation (Swagger):
+API-Dokumentation:
 
 ```
 http://127.0.0.1:8082/docs
